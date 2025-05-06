@@ -1,0 +1,41 @@
+networks:
+  gateway:
+    driver: bridge
+  private:
+    driver: bridge
+
+services:
+  minio:
+    image: "bitnami/minio:latest"
+    container_name: fastapi-minio-minio
+    environment:
+      - MINIO_ROOT_USER=minio-root-user
+      - MINIO_ROOT_PASSWORD=minio-root-password
+      - MINIO_ROOT_USER='minio-root
+      - MINIO_ROOT_PASSWORD='minio-root-password
+      - MINIO_SERVER_ACCESS_KEY='minio-access-key
+      - MINIO_SERVER_SECRET_KEY='minio-secret-key
+    networks:
+      - private
+    volumes:
+      - ./tmp/:/bitnami/minio/data
+
+  postgres:
+    image: "bitnami/postgresql:latest"
+    container_name: fastapi-minio-postgres
+    environment:
+      - POSTGRES_USER=fastapi-minio-user
+      - POSTGRES_PASSWORD=fastapi-minio-pass
+      - POSTGRES_DB=fastapi-minio-db
+    networks:
+      - private
+    volumes:
+      - ./tmp/:/bitnami/postgresql/data
+
+  app-dev:
+    image:
+    container_name: fastapi-minio-app
+    networks:
+      - gateway
+      - private
+    # environment:
