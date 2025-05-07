@@ -8,11 +8,14 @@ from sqlalchemy.ext.associationproxy import AssociationProxy, association_proxy
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-    from .role import Role
-    from .user import User
+    from .role import RoleModel
+    from .user import UserModel
+else:
+    RoleModel = None
+    UserModel = None
 
 
-class UserRole(UUIDAuditBase):
+class UserRoleModel(UUIDAuditBase):
     __tablename__ = "user_account_role"
     __table_args__ = {"comment": "Links a user to a specific role."}
 
@@ -22,10 +25,10 @@ class UserRole(UUIDAuditBase):
 
     # =============================== Relationships
 
-    user: Mapped[User] = relationship(back_populates="roles", innerjoin=True, uselist=False, lazy="joined")
+    user: Mapped[UserModel] = relationship(back_populates="roles", innerjoin=True, uselist=False, lazy="joined")
     user_name: AssociationProxy[str] = association_proxy("user", "name")
     user_email: AssociationProxy[str] = association_proxy("user", "email")
 
-    role: Mapped[Role] = relationship(back_populates="users", innerjoin=True, uselist=False, lazy="joined")
+    role: Mapped[RoleModel] = relationship(back_populates="users", innerjoin=True, uselist=False, lazy="joined")
     role_name: AssociationProxy[str] = association_proxy("role", "name")
     role_slug: AssociationProxy[str] = association_proxy("role", "slug")

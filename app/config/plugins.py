@@ -1,3 +1,5 @@
+from advanced_alchemy.extensions.fastapi import AsyncSessionConfig, SQLAlchemyAsyncConfig
+
 from .base import get_config
 
 config = get_config()
@@ -37,3 +39,10 @@ LOGGING_CONFIG = {
         },
     },
 }
+
+SQLALCHEMY_CONFIG = SQLAlchemyAsyncConfig(
+    connection_string=config.database.url,
+    session_config=AsyncSessionConfig(expire_on_commit=False),
+    create_all=True,
+    commit_mode="autocommit",
+)

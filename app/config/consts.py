@@ -1,5 +1,4 @@
 CACHE_EXPIRATION: int = 60
-SITE_INDEX = "/"
-OPENAPI_SCHEMA = "/schema"
-HEALTH_ENDPOINT = "/health"
-SUPERUSER_ACCESS_ROLE = "Superuser"
+
+SUPERUSER_ROLE_NAME = "superuser"
+DEFAULT_USER_ROLE = "client"

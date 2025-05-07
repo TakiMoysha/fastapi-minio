@@ -4,10 +4,12 @@ from advanced_alchemy.mixins import SlugKey
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 if TYPE_CHECKING:
-    from .user_role import UserRole
+    from .user_role import UserRoleModel
+else:
+    UserRoleModel = None
 
 
-class Role(UUIDAuditBase, SlugKey):
+class RoleModel(UUIDAuditBase, SlugKey):
     __tablename__ = "role"
     __table_args__ = {"comment": "User roles for application access"}
 
@@ -16,7 +18,7 @@ class Role(UUIDAuditBase, SlugKey):
 
     # =============================== Relationships
 
-    users: Mapped[list[UserRole]] = relationship(
+    users: Mapped[list[UserRoleModel]] = relationship(
         back_populates="role",
         cascade="all, delete",
         lazy="noload",

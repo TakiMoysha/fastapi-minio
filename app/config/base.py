@@ -1,29 +1,37 @@
 from dataclasses import dataclass, field
 from functools import lru_cache
+from pathlib import Path
+from typing import Final
+
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine
 
 from app.lib.upcast_env import get_upcast_env
+
+APP_HOME: Final[Path] = Path(get_upcast_env("APP_HOME", "app")).absolute()
 
 
 @dataclass
 class ServerConfig:
     debug: bool = field(default_factory=lambda: get_upcast_env("SERVER_DEBUG", False))
 
+    secret_key: str = field(default_factory=lambda: get_upcast_env("SERVER_SECRET_KEY", "_dont_expose_me_"), repr=False, hash=False)  # fmt: skip
+
     cors_origins: list[str] = field(
         default_factory=lambda: get_upcast_env(  # type: ignore
             "SERVER_CORS_ORIGINS_BOOTSTRAP",
-            ["http://localhost:3000", "http://localhost:8000", "http://localhost:8080"], # type: ignore
+            ["http://localhost:3000", "http://localhost:8000", "http://localhost:8080"],  # type: ignore
         ),
     )
     cors_methods: list[str] = field(
         default_factory=lambda: get_upcast_env(  # type: ignore
             "SERVER_CORS_METHODS_BOOTSTRAP",
-            ["GET", "POST", "PUT", "DELETE", "OPTIONS"], # type: ignore
+            ["GET", "POST", "PUT", "DELETE", "OPTIONS"],  # type: ignore
         ),
     )
     cors_headers: list[str] = field(
         default_factory=lambda: get_upcast_env(  # type: ignore
             "SERVER_CORS_HEADERS_BOOTSTRAP",
-            ["*"], # type: ignore
+            ["*"],  # type: ignore
         ),
     )
 
@@ -31,21 +39,41 @@ class ServerConfig:
 @dataclass
 class MinIOConfig:
     endpoint_url: str = field(default_factory=lambda: get_upcast_env("MINIO_ENDPOINT_URL", "localhost:9000"))
-    access_key: str = field(default_factory=lambda: get_upcast_env("MINIO_ACCESS_KEY", "minio"))
-    secret_key: str = field(default_factory=lambda: get_upcast_env("MINIO_SECRET_KEY", "minio123"))
+    access_key: str = field(default_factory=lambda: get_upcast_env("MINIO_ACCESS_KEY", "minio"), repr=False, hash=False)
+    secret_key: str = field(default_factory=lambda: get_upcast_env("MINIO_SECRET_KEY", "minio123"), repr=False, hash=False)  # fmt: skip
 
 
 @dataclass
 class DatabaseConfig:
+    driver: str = field(default_factory=lambda: get_upcast_env("DB_DRIVER", "postgresql+asyncpg"))
     host: str = field(default_factory=lambda: get_upcast_env("DB_HOST", "localhost"))
     port: int = field(default_factory=lambda: get_upcast_env("DB_PORT", 5432))
-    database: str = field(default_factory=lambda: get_upcast_env("DB_NAME", "fastapi"))
-    user: str = field(default_factory=lambda: get_upcast_env("DB_USER", "fastapi"))
-    password: str = field(default_factory=lambda: get_upcast_env("DB_PASSWORD", "fastapi"))
+    database: str = field(default_factory=lambda: get_upcast_env("DB_NAME", "fastapiminio"))
+    user: str = field(default_factory=lambda: get_upcast_env("DB_USER", "fastapiminio"))
+    password: str = field(default_factory=lambda: get_upcast_env("DB_PASSWORD", "fastapiminio"), repr=False, hash=False)
 
     @property
     def url(self):
-        return f"postgresql://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
+        return f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
+
+    def get_engine(self) -> AsyncEngine:
+        if self._engine_instance is not None:
+            return self._engine_instance
+
+        if self.url.startswith("postgresql+asyncpg"):
+            engine = create_async_engine(
+                url=self.url,
+                future=True,
+                pool_use_lifo=True,
+            )
+        else:
+            engine = create_async_engine(
+                url=self.url,
+                future=True,
+            )
+
+        self._engine_instance = engine
+        return self._engine_instance
 
 
 @dataclass
