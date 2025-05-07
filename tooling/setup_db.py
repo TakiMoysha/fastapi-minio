@@ -7,14 +7,14 @@ required:
     psycopg
 """
 
-from dataclasses import dataclass
-import os
 import argparse
-import sys
-from typing import Self
-import psycopg
 import getpass
+import os
+import sys
+from dataclasses import dataclass
+from typing import Self
 
+import psycopg
 from psycopg.errors import DuplicateDatabase, DuplicateObject
 
 
@@ -41,7 +41,7 @@ def database_setup(config: DatabaseConfig, connection_url: str):
     SQL_GRANT_SCHEMA_PRIVILEGES = f"GRANT ALL ON SCHEMA public TO {config.username};"  # fmt: skip
     SQL_ALTER_OWNER = f"ALTER DATABASE {config.database} OWNER TO {config.username};"  # fmt: skip
 
-    def _autocommit_exec(conn, sql):
+    def _autocommit_exec(conn, sql: str):
         conn.autocommit = True
         try:
             conn.execute(sql)

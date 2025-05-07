@@ -1,3 +1,4 @@
+from os import getenv
 from dataclasses import dataclass, field
 from functools import lru_cache
 from pathlib import Path
@@ -52,8 +53,13 @@ class DatabaseConfig:
     user: str = field(default_factory=lambda: get_upcast_env("DB_USER", "fastapiminio"))
     password: str = field(default_factory=lambda: get_upcast_env("DB_PASSWORD", "fastapiminio"), repr=False, hash=False)
 
+    _url: str | None = field(default_factory=lambda: getenv("DB_URL"), repr=False, hash=False)
+
     @property
     def url(self):
+        if self._url:
+            return self._url
+
         return f"{self.driver}://{self.user}:{self.password}@{self.host}:{self.port}/{self.database}"
 
     def get_engine(self) -> AsyncEngine:

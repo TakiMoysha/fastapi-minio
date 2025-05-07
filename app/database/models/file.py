@@ -31,7 +31,7 @@ class FileModel(UUIDAuditBase, SlugKey):
     file_size: Mapped[int] = mapped_column(nullable=False)
     hash_sum: Mapped[str] = mapped_column(nullable=False)
     upload_date: Mapped[timestamp] = mapped_column(nullable=False)
-    path: Mapped[str] = mapped_column(nullable=False)
+    path: Mapped[str] = mapped_column(nullable=False) # StorageObject => S3
 
     description: Mapped[str | None]
 

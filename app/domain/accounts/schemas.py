@@ -1,13 +1,6 @@
 from uuid import UUID
 from app.lib.schemas import BaseSchema
 
-__all__ = (
-    # "UserSchema",
-    # "UserCreateSchema",
-    # "AccountLoginSchema",
-)
-
-
 # class UserSchema(BaseSchema):
 #     id: UUID
 #     email: str
