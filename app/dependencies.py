@@ -16,11 +16,7 @@ __all__ = (
 
 
 async def provide_minio() -> AsyncGenerator:
-    raise NotImplementedError
-
-
-async def provide_retrieval_model() -> AsyncGenerator:
-    raise NotImplementedError
+    return None
 
 
 # =====================================================================================================

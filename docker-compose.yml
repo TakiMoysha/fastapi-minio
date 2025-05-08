@@ -33,8 +33,11 @@ services:
       - ./tmp/:/bitnami/postgresql/data
 
   app-dev:
-    image:
+    build: .
     container_name: fastapi-minio-app
+    depends_on:
+      - minio
+      - postgres
     networks:
       - gateway
       - private

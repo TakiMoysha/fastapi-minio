@@ -14,6 +14,7 @@ APP_HOME: Final[Path] = Path(get_upcast_env("APP_HOME", "app")).absolute()
 @dataclass
 class ServerConfig:
     debug: bool = field(default_factory=lambda: get_upcast_env("SERVER_DEBUG", False))
+    testing: bool = field(default_factory=lambda: get_upcast_env("SERVER_TESTING", False))
 
     secret_key: str = field(default_factory=lambda: get_upcast_env("SERVER_SECRET_KEY", "_dont_expose_me_"), repr=False, hash=False)  # fmt: skip
 

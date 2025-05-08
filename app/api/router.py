@@ -9,28 +9,21 @@ from app.dependencies import (
     DepsAlchemy,
     DepsAlchemySession,
     provide_minio,
-    provide_retrieval_model,
 )
 from app.domain.accounts.services import AccountService
-from app.lib.health_check import is_minio_healthy, is_model_loaded
+# from app.lib.health_check import is_minio_healthy, is_model_loaded
 
 logger = getLogger(__name__)
 
-api_router = APIRouter(
-    prefix="/api",
-    tags=[],
-    dependencies=[],
-)
+api_router = APIRouter()
 
 
-@api_router.get("/health", status_code=status.HTTP_200_OK, tags=["health"])
+@api_router.get("/api/health", status_code=status.HTTP_200_OK, tags=["health"])
 async def health_get(
     minio: Minio = Depends(provide_minio),
-    retrieval_model=Depends(provide_retrieval_model),
 ):
     detail = {
-        "minio": "ok" if is_minio_healthy(minio) else "error",
-        "retrieval_model": "ok" if is_model_loaded(retrieval_model) else "error",
+        # "minio": "ok" if is_minio_healthy(minio) else "error",
     }
 
     if all(value == "ok" for value in detail.values()):
@@ -56,7 +49,7 @@ class AccountRegistrionSchema(BaseSchema):
 
 
 @router.post(
-    "/auth/sign-up",
+    "/api/auth/sign-up",
     status_code=status.HTTP_201_CREATED,
 )
 async def registration(
@@ -65,7 +58,6 @@ async def registration(
 ):
     # res = await accounts_service.registration(email=input.email, password=input.password)
     res = await accounts_service.get_one_or_none(email=input.email)
-    logger.info(f"registration: <{str(res)}>")
     return {"done": "OK"}
 
 

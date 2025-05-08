@@ -17,6 +17,7 @@ alembic *ARGS:
 
 # example: just test tests -v -s --log-cli-level=INFO
 test target="tests" *ARGS:
-  DB_URL="sqlite+aiosqlite:///:memory:" \\
+  export SERVER_TESTING=true
+  export DB_URL="sqlite+aiosqlite:///:memory:"
   uv run pytest {{ target }} {{ ARGS }}
 
